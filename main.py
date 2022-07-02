@@ -1,5 +1,6 @@
 from sanic import Sanic, response
 from sanic_ext import Extend
+import psutil
 
 from typing import Optional, Any
 
@@ -71,6 +72,14 @@ async def get_blog(request, _id):
     if data is None:
         return json(message="Not found", status=404)
     return json(data)
+
+@app.get("/status")
+async def status(request):
+    return json({
+        "cpu": psutil.cpu_percent(interval=None),
+        "memory": psutil.virtual_memory().percent,
+        "disk": psutil.disk_usage("./").percent
+    })
 
 
 if __name__ == "__main__":
