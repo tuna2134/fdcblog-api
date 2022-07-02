@@ -8,6 +8,7 @@ from os import getenv
 from functools import wraps
 import string
 import random
+import multiprocessing
 
 from lib.backend import Backend
 from lib.cors import add_cors_headers
@@ -16,6 +17,7 @@ from lib.cors import add_cors_headers
 app = Backend("app")
 Extend(app)
 app.register_middleware(add_cors_headers, "response")
+workers = multiprocessing.cpu_count()
 
 blog_collection = app.get_collection("blogs")
 
@@ -78,7 +80,8 @@ async def status(request):
     return json({
         "cpu": psutil.cpu_percent(interval=None),
         "memory": psutil.virtual_memory().percent,
-        "disk": psutil.disk_usage("./").percent
+        "disk": psutil.disk_usage("./").percent,
+        "workers": workers
     })
 
 
