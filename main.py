@@ -1,6 +1,7 @@
 from sanic import Sanic, response
 from sanic_ext import Extend
 import psutil
+from misaka import Markdown, HtmlRenderer
 
 from typing import Optional, Any
 
@@ -20,6 +21,8 @@ app.register_middleware(add_cors_headers, "response")
 workers = multiprocessing.cpu_count()
 
 blog_collection = app.get_collection("blogs")
+rndr = HtmlRenderer()
+md = Markdown(rndr)
 
 def json(data: Optional[Any] = None, *, message: Optional[str] = None, status: int = 200):
     return response.json({
@@ -53,7 +56,7 @@ async def add_blog(request):
     await blog_collection.insert_one({
         "title": data["title"],
         "description": data["description"],
-        "content": data["content"],
+        "content": md(data["content"]),
         "id": _id
     })
     return json({
