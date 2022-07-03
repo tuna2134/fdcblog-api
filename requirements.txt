@@ -2,3 +2,4 @@ sanic[ext]
 motor
 dnspython
 psutil
+misaka
