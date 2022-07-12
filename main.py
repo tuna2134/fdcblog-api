@@ -63,6 +63,16 @@ async def add_blog(request):
         "id": _id
     }, message="added")
 
+@app.delete("/blogs/<_id>")
+@authorized
+async def delete_blog(request, _id):
+    result = await blog_collection.delete_one({
+        "id": _id
+    })
+    if result.deleted_count == 0:
+        return json(message="Not found", status=404)
+    return json(message="Deleted")
+
 @app.get("/blogs")
 async def get_blogs(request):
     cursor = blog_collection.find(None, {"_id": False})
