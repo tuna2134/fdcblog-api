@@ -3,3 +3,4 @@ motor
 dnspython
 psutil
 misaka
+aiomysql
