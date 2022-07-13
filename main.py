@@ -2,6 +2,7 @@ from sanic import Sanic, response
 from sanic_ext import Extend
 import psutil
 from misaka import Markdown, HtmlRenderer
+from aiomysql import create_pool, Pool
 
 from typing import Optional, Any
 
@@ -17,6 +18,15 @@ from lib.cors import add_cors_headers
 
 app = Backend("app")
 Extend(app)
+
+
+@app.before_server_start
+async def _setup(app, loop):
+    app.ctx.pool: Pool = await create_pool(
+        host=getenv("DB_HOST"), user=getenv("DB_USER"), password=getenv("DB_PASSWORD"),
+        db=getenv("DB_NAME")
+    )
+
 app.register_middleware(add_cors_headers, "response")
 workers = multiprocessing.cpu_count()
 
